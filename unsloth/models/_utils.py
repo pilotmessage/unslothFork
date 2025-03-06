@@ -1003,23 +1003,22 @@ def _unsloth_get_batch_samples(self, epoch_iterator, num_batches):
     batch_samples = []
     num_items_in_batch = None
 
-# Check if model allows **kwargs
-model = self.model
-#f = model.base_model.model.forward if hasattr(model, "base_model") else model.forward
-if hasattr(model, "base_model"):
-    f = model.base_model.forward
-else:
-    f = model.forward
+    # Check if model allows **kwargs
+    model = self.model
+    if hasattr(model, "base_model"):
+        f = model.base_model.forward
+    else:
+        f = model.forward
 
     # Iterate to find all batches
     for _ in range(num_batches):
         try:
-            batch_samples += [next(epoch_iterator)]
+            batch_samples.append(next(epoch_iterator))
         except StopIteration:
             break
-    pass
 
     # Get num_items_in_batch
+    has_kwargs = True  # Assuming this variable is defined somewhere in your class or context
     if has_kwargs and len(batch_samples) > 0 and "labels" in batch_samples[0]:
         try:
             num_items_in_batch = sum(
@@ -1034,10 +1033,8 @@ else:
 
         except Exception as exception:
             logger.warning_once(exception)
-    pass
 
     return batch_samples, num_items_in_batch
-pass
 
 
 def _unsloth_pre_compute_loss(self, model, inputs, *args, **kwargs):
