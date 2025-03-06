@@ -1003,10 +1003,13 @@ def _unsloth_get_batch_samples(self, epoch_iterator, num_batches):
     batch_samples = []
     num_items_in_batch = None
 
-    # Check if model allows **kwargs
-    model = self.model
-    f = model.base_model.model.forward if hasattr(model, "base_model") else model.forward
-    has_kwargs = tuple(inspect.signature(f).parameters.values())[-1].kind == inspect._VAR_KEYWORD
+# Check if model allows **kwargs
+model = self.model
+#f = model.base_model.model.forward if hasattr(model, "base_model") else model.forward
+if hasattr(model, "base_model"):
+    f = model.base_model.forward
+else:
+    f = model.forward
 
     # Iterate to find all batches
     for _ in range(num_batches):
